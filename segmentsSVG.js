@@ -58,21 +58,21 @@ function render(ctx, draws){
 	
 	for(let draw of draws){
 		
-		if(showVertices != null && draw.drawType == "LINE"){
+		if(showVertices != null && currentDrawCONST == draw && draw.drawType == "LINE"){
 			
 			vertice2d(ctx, draw.ptbeg, (draw.currentNode && draw.currentNode.beg)?true:false);
 			vertice2d(ctx, draw.ptend, (draw.currentNode && draw.currentNode.end)?true:false);
 			
 		}
 		
-        if(showVertices != null && draw.drawType=="BEZIER"){
+        if(showVertices != null && currentDrawCONST == draw && draw.drawType=="BEZIER"){
 			
 			vertice2d(ctx, draw.ptbeg, (draw.currentNode && draw.currentNode.beg)?true:false);
 			vertice2d(ctx, draw.ptend, (draw.currentNode && draw.currentNode.end)?true:false);
 			
         }
 		
-        if(showVertices != null && draw.drawType == "RECT"){
+        if(showVertices != null && currentDrawCONST == draw && draw.drawType == "RECT"){
 			
 			render_nodes_rect(ctx, draw);
 
