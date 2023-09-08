@@ -26,6 +26,14 @@ function render(ctx, draws){
 			
 		}
 		
+		if(draw.drawType == "BEZIER-PREVIEW"){
+			
+			ctx.strokeStyle = "red";
+			
+			render_line(ctx, draw);
+			
+		}
+		
         if(draw.drawType == "RECT"){
 
             ctx.beginPath();
@@ -1116,6 +1124,33 @@ module.exports = function(){
 			
 			objDraw.ptend.x = ev.offsetX;
 			objDraw.ptend.y = ev.offsetY;
+			
+			render(ctx, [...draws, objDraw]);
+			
+		}
+		
+		if(drawType=="BEZIER-CTRL"){
+			
+			let preview_line = new drawRaw();
+			preview_line.drawType = "BEZIER-PREVIEW";
+			
+			preview_line.ptbeg = {
+				...objDraw.ptbeg
+			};
+			
+			preview_line.ptend = {
+				x: ev.offsetX,
+				y: ev.offsetY
+			};
+			
+			render(ctx, [...draws, preview_line]);
+			
+		}
+		
+		if(drawType=="BEZIER-END"){
+			
+            objDraw.ptend.x = ev.offsetX;
+            objDraw.ptend.y = ev.offsetY;
 			
 			render(ctx, [...draws, objDraw]);
 			
