@@ -379,8 +379,8 @@ function render_bezier(ctx, draw){
 		}
 	];
 
-	let pts = drawDeCasteljau(controlPoints, 0.1);
-	pts = makeFinalPoints(controlPoints,pts, 0.1, 1, 0.05 );
+	let pts = drawDeCasteljau(controlPoints, 0.001);
+	pts = makeFinalPoints(controlPoints,pts, 0.001, 1, 0.05 );
 
 	ctx.beginPath();
 
@@ -473,8 +473,8 @@ function is_selected_bezier(pt_, draw){
 		}
 	];
 	
-	let pts = drawDeCasteljau(controlPoints, 0.1);
-	pts = makeFinalPoints(controlPoints,pts, 0.1, 1, 0.05 );
+	let pts = drawDeCasteljau(controlPoints, 0.001);
+	pts = makeFinalPoints(controlPoints,pts, 0.001, 1, 0.05 );
 	
 	let ishovered = false;
 	
@@ -1094,6 +1094,15 @@ module.exports = function(){
         
             render(ctx, [...draws, objDraw]);
         }
+		
+		if(drawType=="LINE-CTRL"){
+			
+			objDraw.ptend.x = ev.offsetX;
+			objDraw.ptend.y = ev.offsetY;
+			
+			render(ctx, [...draws, objDraw]);
+			
+		}
 		
 		if(drawType=="SELECT" || drawType=="VERTICES"){
 			
