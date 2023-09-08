@@ -6,9 +6,17 @@ let currentDrawCONST = null;
 let drawType = null;
 let showVertices = null;
 
+
+
 function render(ctx, draws){
 
     ctx.clearRect(0,0,canvas.width, canvas.height);
+
+	if( currentDrawCONST && currentDrawCONST.drawType == "SELECT-DRAW"){
+		
+		render_select_draw(ctx,currentDrawCONST);
+		
+	}
 
     for(let draw of draws){
 		
@@ -115,6 +123,78 @@ function render(ctx, draws){
 		
 	}
 
+}
+
+function render_select_draw(ctx, draw){
+	
+	console.log("ok");
+	
+	let len_space = 3;
+	let len_len = 5;
+	
+	let cnt = parseInt((draw.width+len_space)/(len_len+len_space));
+	let margin = (draw.width - (len_len+len_space)*cnt + len_space)/2;
+	
+	console.log(margin);
+	
+	ctx.strokeStyle = "blue";
+	
+	ctx.beginPath();
+	
+	if(cnt>0){
+	
+		ctx.moveTo(draw.x+margin, draw.y);
+		ctx.lineTo(draw.x+margin+len_len, draw.y);
+		
+		for(let i = 1;i<=cnt-1; i++){
+			
+			ctx.moveTo( draw.x + margin + (len_len+len_space)*i, draw.y );
+			ctx.lineTo(  draw.x + margin + (len_len+len_space)*i + len_len, draw.y  );
+			
+		}
+		
+		ctx.moveTo(draw.x+margin, draw.y+draw.height);
+		ctx.lineTo(draw.x+margin+len_len, draw.y+draw.height);
+		
+		for(let i = 1;i<=cnt-1; i++){
+			
+			ctx.moveTo( draw.x + margin + (len_len+len_space)*i, draw.y+draw.height );
+			ctx.lineTo(  draw.x + margin + (len_len+len_space)*i + len_len, draw.y+draw.height  );
+			
+		}
+		
+	}
+	
+	cnt = parseInt((draw.height+len_space)/(len_len+len_space));
+	margin = (draw.height - (len_len+len_space)*cnt + len_space)/2;
+	
+	if(cnt>0){
+		
+		ctx.moveTo(draw.x, draw.y + margin);
+		ctx.lineTo(draw.x, draw.y + margin + len_len);
+		
+		for(let i = 1;i<=cnt-1; i++){
+			
+			ctx.moveTo(draw.x, draw.y + margin + (len_len + len_space)*i);
+			ctx.lineTo(draw.x, draw.y + margin + (len_len + len_space)*i + len_len);
+			
+		}
+		
+		ctx.moveTo(draw.x+draw.width, draw.y + margin);
+		ctx.lineTo(draw.x+draw.width, draw.y + margin + len_len);
+		
+		for(let i = 1;i<=cnt-1; i++){
+			
+			ctx.moveTo(draw.x+draw.width, draw.y + margin + (len_len + len_space)*i);
+			ctx.lineTo(draw.x+draw.width, draw.y + margin + (len_len + len_space)*i + len_len);
+			
+		}
+		
+		
+		
+	}
+	
+	ctx.stroke();
 }
 
 function drawRaw(){
@@ -541,6 +621,19 @@ function zoom_line(draw,center, ratio){
 
 function zoomin(draws, center, ratio){
 	
+	if( currentDrawCONST && currentDrawCONST.drawType == "SELECT-DRAW"){
+		
+		let len_x = currentDrawCONST.x - center.x;
+		let len_y = currentDrawCONST.y - center.y;
+		
+		currentDrawCONST.x = center.x + len_x*ratio;
+		currentDrawCONST.y = center.y + len_y*ratio;
+		
+		currentDrawCONST.width *= ratio;
+		currentDrawCONST.height *= ratio;
+		
+	}
+	
 	for(let draw of draws){
 		
 		if(draw.drawType == "RECT"){
@@ -589,6 +682,46 @@ function zoomin(draws, center, ratio){
 function ptDist(pt1, pt2){
 	
 	return Math.sqrt( (pt1.x - pt2.x) * (pt1.x - pt2.x) + (pt1.y - pt2.y) * (pt1.y - pt2.y) );
+}
+
+
+function makeSelectDraw(draw){
+	
+	let select_draw = new drawRaw();
+	select_draw.drawType = "SELECT-DRAW";
+	
+	let minx, maxx, miny, maxy;
+	
+	if(draw.drawType=="PATH"){
+		
+		for(let i = 0; i<draw.segments.length; i++){
+			
+			let segment = draw.segments[i];
+			
+			if(minx == undefined || minx > Math.min( segment.ptbeg.x, segment.ptend.x )){
+				minx = Math.min( segment.ptbeg.x, segment.ptend.x );
+			}
+			if(maxx == undefined || maxx < Math.max(segment.ptbeg.x, segment.ptend.x)){
+				maxx = Math.max(segment.ptbeg.x, segment.ptend.x);
+			}
+			if(miny == undefined || miny > Math.min( segment.ptbeg.y, segment.ptend.y)){
+				miny = Math.min( segment.ptbeg.y, segment.ptend.y);
+			}
+			if(maxy == undefined || maxy < Math.max( segment.ptbeg.y, segment.ptend.y)){
+				maxy = Math.max( segment.ptbeg.y, segment.ptend.y);
+			}
+			
+		}
+		
+	}
+	
+	select_draw.x = minx;
+	select_draw.y = miny;
+	
+	select_draw.width = maxx - minx;
+	select_draw.height = maxy - miny;
+	
+	return select_draw;
 }
 
 
@@ -882,10 +1015,32 @@ module.exports = function(){
 				objDraw.ptbeg.y = ev.offsetY;
 			}
 			
+			render(ctx,draws);
+			
 		}
 		
 		
 		if(drawType=="SELECT"){
+			
+			let drawSelected = getSelected(draws, {x,y});
+			if(drawSelected){
+				
+				//currentDrawCONST = drawSelected;
+				
+				let select_draw = makeSelectDraw(drawSelected);
+				
+				currentDrawCONST = select_draw;
+				currentDrawCONST.drawref = drawSelected;
+				
+				console.log(select_draw);
+				
+				render(ctx,[...draws,select_draw]);
+				
+			}
+			else{
+				currentDrawCONST = null;
+				render(ctx,draws);
+			}
 			
 		}
 		
@@ -919,10 +1074,11 @@ module.exports = function(){
 			else{
 				currentDrawCONST = null;
 				showVertices = null;
+				
+				render(ctx,draws);
 			}
 		}
-		
-		render(ctx,draws);
+	
 
 
     })
@@ -1157,7 +1313,7 @@ module.exports = function(){
 		}
 		
 		if(drawType=="SELECT" || drawType=="VERTICES"){
-			
+			/*
 			let keyName;
 			if(drawType=="SELECT"){
 				keyName = "isselected";
@@ -1182,6 +1338,7 @@ module.exports = function(){
 			
 			
 			render(ctx,draws);
+			*/
 		}
 		
     })
