@@ -948,26 +948,24 @@ module.exports = function(){
         }
 		
 		if(drawType == "LINE"){
-			console.log("yp");
 			drawType = "LINE-CTRL";
-			
 		}
 		
 		else if(drawType=="LINE-CTRL"){
 			
-			console.log("yp2");
-			
 			objDraw.ptend.x = ev.offsetX;
-			
 			objDraw.ptend.y = ev.offsetY;
 			
 			let ispathextended = false;
 			
 			if(currentDrawCONST){
 				
+				/*
+					w momencie zaznaczenia wierzchołka, jeśli zaznaczona jest także ścieżka, objDraw.ptbeg jest referencją do punktu w sąsiadującym segmencie 
+				*/
+				
+				
 				if(currentDrawCONST.currentNode.pt == objDraw.ptbeg){
-					
-					console.log(currentDrawCONST.currentNode);
 					
 					if(currentDrawCONST.currentNode.beg){
 						
@@ -978,12 +976,16 @@ module.exports = function(){
 							y: ev.offsetY
 						};
 						
-						console.log({...currentDrawCONST});
+						currentDrawCONST.currentNode.segmentref = objDraw;
+						currentDrawCONST.currentNode.segment_idx = 0;
+						currentDrawCONST.currentNode.pt = objDraw.ptbeg;
+						currentDrawCONST.currentNode.beg = true;
 						
 						currentDrawCONST.segments.unshift(objDraw);
 						
-						console.log({...currentDrawCONST});
-						
+						objDraw = new drawRaw();
+						objDraw.drawType = "LINE";
+						objDraw.ptbeg = currentDrawCONST.currentNode.pt;
 						
 					}
 					
@@ -992,7 +994,16 @@ module.exports = function(){
 						objDraw.ptbeg = {...objDraw.ptbeg
 						};
 						
+						currentDrawCONST.currentNode.segmentref = objDraw;
+						currentDrawCONST.currentNode.segment_idx = currentDrawCONST.segments.length;
+						currentDrawCONST.currentNode.pt = objDraw.ptend;
+						currentDrawCONST.currentNode.end = true;
+						
 						currentDrawCONST.segments.push(objDraw);
+						
+						objDraw = new drawRaw();
+						objDraw.drawType = "LINE";
+						objDraw.ptbeg = currentDrawCONST.currentNode.pt;
 						
 					}
 					
@@ -1006,14 +1017,20 @@ module.exports = function(){
 				
 				draws.push(objDraw);
 				
+				objDraw = new drawRaw();
+				objDraw.drawType = "LINE";
+				objDraw.ptbeg = {
+					x: ev.offsetX,
+					y: ev.offsetY
+				}
+				
 			}
 			
 			render(ctx, draws);
 			
 			console.log(objDraw);
 			
-			objDraw = new drawRaw();
-			drawType = "LINE";
+			//drawType = "LINE";
 			
 		}
 
@@ -1149,5 +1166,21 @@ module.exports = function(){
         ctx.closePath();
 
     });
+	
+	canvas.addEventListener("keydown", (ev)=>{
+		
+		if(ev.key == "Escape"){
+			
+			currentDrawCONST = null;
+			objDraw = new drawRaw();
+			drawType = null;
+			
+			render(ctx,draws);
+			
+		}
+		
+		console.log(ev);
+		
+	});
 	
 }
