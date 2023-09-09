@@ -12,12 +12,6 @@ function render(ctx, draws){
 
     ctx.clearRect(0,0,canvas.width, canvas.height);
 
-	if( currentDrawCONST && currentDrawCONST.drawType == "SELECT-DRAW"){
-		
-		render_select_draw(ctx,currentDrawCONST);
-		
-	}
-
     for(let draw of draws){
 		
 		
@@ -122,20 +116,22 @@ function render(ctx, draws){
 		}
 		
 	}
+	
+	if( currentDrawCONST && currentDrawCONST.drawType == "SELECT-DRAW"){
+		
+		render_select_draw(ctx,currentDrawCONST);
+		
+	}
 
 }
 
 function render_select_draw(ctx, draw){
-	
-	console.log("ok");
 	
 	let len_space = 3;
 	let len_len = 5;
 	
 	let cnt = parseInt((draw.width+len_space)/(len_len+len_space));
 	let margin = (draw.width - (len_len+len_space)*cnt + len_space)/2;
-	
-	console.log(margin);
 	
 	ctx.strokeStyle = "blue";
 	
@@ -189,12 +185,162 @@ function render_select_draw(ctx, draw){
 			ctx.lineTo(draw.x+draw.width, draw.y + margin + (len_len + len_space)*i + len_len);
 			
 		}
-		
-		
-		
+	
 	}
 	
 	ctx.stroke();
+	
+	let arrowPath = new Path2D();
+	
+	arrowPath.moveTo(0,0);
+	arrowPath.lineTo(-10,-10);
+	arrowPath.lineTo(-4,-10);
+	arrowPath.lineTo(-4,-22);
+	arrowPath.lineTo(-10,-22);
+	arrowPath.lineTo(0,-32);
+	arrowPath.lineTo(10,-22);
+	arrowPath.lineTo(4,-22);
+	arrowPath.lineTo(4,-10);
+	arrowPath.lineTo(10,-10);
+	arrowPath.lineTo(0,0);
+	
+	ctx.save();
+	ctx.translate(draw.x+(draw.width/2),draw.y-3);
+	
+	ctx.save();
+	ctx.scale(0.5,0.5);
+	if(draw.idx_arrow == 0){
+		ctx.fill(arrowPath);
+	}
+	else{
+		ctx.stroke(arrowPath);
+	}
+	ctx.restore();
+	
+	ctx.translate((draw.width/2)+3,0);
+	
+	ctx.save();
+	ctx.rotate((45 * Math.PI) / 180);
+	
+	ctx.save();
+	ctx.scale(0.5,0.5);
+	if(draw.idx_arrow == 1){
+		ctx.fill(arrowPath);
+	}
+	else{
+		ctx.stroke(arrowPath);
+	}
+	ctx.restore();
+	
+	ctx.restore(); //rotate
+	
+	ctx.translate(0, draw.height/2);
+	
+	ctx.save();
+	ctx.rotate((90 * Math.PI) / 180);
+	
+	ctx.save();
+	ctx.scale(0.5,0.5);
+	if(draw.idx_arrow == 2){
+		ctx.fill(arrowPath);
+	}
+	else{
+		ctx.stroke(arrowPath);
+	}
+	ctx.restore();
+	
+	ctx.restore(); //rotate
+	
+	ctx.translate(0,draw.height/2+6);
+	
+	ctx.save();
+	ctx.rotate((135 * Math.PI) / 180);
+	
+	ctx.save();
+	ctx.scale(0.5,0.5);
+	if(draw.idx_arrow == 3){
+		ctx.fill(arrowPath);
+	}
+	else{
+		ctx.stroke(arrowPath);
+	}
+	ctx.restore();
+	
+	ctx.restore(); //rotate
+	
+	
+	ctx.translate(-(draw.width/2),0);
+	
+	ctx.save();
+	ctx.rotate((180 * Math.PI) / 180);
+	
+	ctx.save();
+	ctx.scale(0.5,0.5);
+	if(draw.idx_arrow == 4){
+		ctx.fill(arrowPath);
+	}
+	else{
+		ctx.stroke(arrowPath);
+	}
+	ctx.restore();
+	
+	ctx.restore(); //rotate
+	
+	ctx.translate(-(draw.width/2)-6,0);
+	
+	ctx.save();
+	ctx.rotate((225 * Math.PI) / 180);
+	
+	ctx.save();
+	ctx.scale(0.5,0.5);
+	if(draw.idx_arrow == 5){
+		ctx.fill(arrowPath);
+	}
+	else{
+		ctx.stroke(arrowPath);
+	}
+	ctx.restore();
+	
+	ctx.restore(); //rotate
+	
+	ctx.translate(0,-draw.height/2);
+	
+	ctx.save();
+	ctx.rotate((270 * Math.PI) / 180);
+	
+	ctx.save();
+	ctx.scale(0.5,0.5);
+	if(draw.idx_arrow == 6 ){
+		ctx.fill(arrowPath);
+	}
+	else{
+		ctx.stroke(arrowPath);
+	}
+	ctx.restore();
+	
+	ctx.restore(); //rotate
+	
+	ctx.translate(0,-draw.height/2-6);
+	ctx.save();
+	ctx.rotate((315 * Math.PI) / 180);
+	
+	ctx.save();
+	ctx.scale(0.5,0.5);
+	if(draw.idx_arrow == 7){
+		ctx.fill(arrowPath);
+	}
+	else{
+		ctx.stroke(arrowPath);
+	}
+	ctx.restore();
+	
+	ctx.restore(); //rotate
+	
+	
+	ctx.restore();
+	
+	
+	
 }
 
 function drawRaw(){
@@ -425,6 +571,44 @@ function getSelected(draws, {x,y}){
 	
 }
 
+function is_arrow_selected(select_draw, {x,y}){
+	
+	
+	if(y<select_draw.y && y>select_draw.y-16 && x>select_draw.x+(select_draw.width/2)-5 && x< select_draw.x+(select_draw.width/2)+5){
+		return 0;
+	}
+	
+	if(x>select_draw.x+select_draw.width && x<select_draw.x+select_draw.width+16 && y<select_draw.y && y>select_draw.y-16){
+		return 1;
+	}
+	
+	if(x>select_draw.x+select_draw.width && x<select_draw.x+select_draw.width+10 && y>select_draw.y+(select_draw.height/2)-5 && y<select_draw.y+(select_draw.height/2)+5 ){
+		return 2;
+	}
+	
+	if(x>select_draw.x+select_draw.width && x<select_draw.x+select_draw.width+16 && y>select_draw.y+select_draw.height && y<select_draw.y+select_draw.height + 16 ){
+		return 3;
+	}
+	
+	if(y>select_draw.y+select_draw.height && y<select_draw.y+select_draw.height+16 && x>select_draw.x+(select_draw.width/2)-5 && x< select_draw.x+(select_draw.width/2)+5){
+		return 4;
+	}
+	
+	if(x<select_draw.x && x>select_draw.x-16 && y>select_draw.y+select_draw.height && y<select_draw.y+select_draw.height+16){
+		return 5;
+	}
+	
+	if(x<select_draw.x && x>select_draw.x-16 && y>select_draw.y+(select_draw.height/2)-5 && y<select_draw.y+(select_draw.height/2)+5){
+		return 6;
+	}
+	
+	if(x<select_draw.x && x>select_draw.x-16 && y<select_draw.y && y>select_draw.y-16){
+		return 7;
+	}
+	
+	
+}
+
 function vertice2d(ctx, {x,y} , selected = false){
 	
 	if(selected==true){
@@ -578,59 +762,65 @@ function is_selected_bezier(pt_, draw){
 	return ishovered;
 }
 
-function zoom_bezier(draw, center, ratio){
+function zoom_bezier(draw, center, ratioX, ratioY){
 	
 	let len_x = draw.ptbeg.x - center.x;
 	let len_y = draw.ptbeg.y - center.y;
 	
-	draw.ptbeg.x = center.x + len_x*ratio;
-	draw.ptbeg.y = center.y + len_y*ratio;
+	draw.ptbeg.x = center.x + len_x*ratioX;
+	draw.ptbeg.y = center.y + len_y*ratioY;
 	
 	for(let pt of draw.ctrls){
 		
 		len_x = pt.x - center.x;
 		len_y = pt.y - center.y;
 		
-		pt.x = center.x + len_x*ratio;
-		pt.y = center.y + len_y*ratio;
+		pt.x = center.x + len_x*ratioX;
+		pt.y = center.y + len_y*ratioY;
 	}
 	
 	len_x = draw.ptend.x - center.x;
 	len_y = draw.ptend.y - center.y;
 	
-	draw.ptend.x = center.x + len_x*ratio;
-	draw.ptend.y = center.y + len_y*ratio;
+	draw.ptend.x = center.x + len_x*ratioX;
+	draw.ptend.y = center.y + len_y*ratioY;
 	
 }
 
-function zoom_line(draw,center, ratio){
+function zoom_line(draw,center, ratioX, ratioY){
 	
 	let len_x = draw.ptbeg.x - center.x;
 	let len_y = draw.ptbeg.y - center.y;
 	
-	draw.ptbeg.x = center.x + len_x*ratio;
-	draw.ptbeg.y = center.y + len_y*ratio;
+	draw.ptbeg.x = center.x + len_x*ratioX;
+	draw.ptbeg.y = center.y + len_y*ratioY;
 	
 	len_x = draw.ptend.x - center.x;
 	len_y = draw.ptend.y - center.y;
 	
-	draw.ptend.x = center.x + len_x*ratio;
-	draw.ptend.y = center.y + len_y*ratio;
+	draw.ptend.x = center.x + len_x*ratioX;
+	draw.ptend.y = center.y + len_y*ratioY;
 	
 }
 
-function zoomin(draws, center, ratio){
+function zoomin(draws,center, ratio){
+	
+	zoomin_(draws,center,ratio,ratio);
+	
+}
+
+function zoomin_(draws, center, ratioX, ratioY){
 	
 	if( currentDrawCONST && currentDrawCONST.drawType == "SELECT-DRAW"){
 		
 		let len_x = currentDrawCONST.x - center.x;
 		let len_y = currentDrawCONST.y - center.y;
 		
-		currentDrawCONST.x = center.x + len_x*ratio;
-		currentDrawCONST.y = center.y + len_y*ratio;
+		currentDrawCONST.x = center.x + len_x*ratioX;
+		currentDrawCONST.y = center.y + len_y*ratioY;
 		
-		currentDrawCONST.width *= ratio;
-		currentDrawCONST.height *= ratio;
+		currentDrawCONST.width *= ratioX;
+		currentDrawCONST.height *= ratioY;
 		
 	}
 	
@@ -641,20 +831,20 @@ function zoomin(draws, center, ratio){
 			let len_x = draw.x - center.x;
 			let len_y = draw.y - center.y;
 			
-			draw.x = center.x + len_x*ratio;
-			draw.y = center.y + len_y*ratio;
+			draw.x = center.x + len_x*ratioX;
+			draw.y = center.y + len_y*ratioY;
 			
-			draw.width *= ratio;
-			draw.height *= ratio;
+			draw.width *= ratioX;
+			draw.height *= ratioY;
 			
 		}
 		if(draw.drawType == "BEZIER"){
 			
-			zoom_bezier(draw,center, ratio);
+			zoom_bezier(draw,center, ratioX, ratioY);
 			
 		}
 		if(draw.drawType=="LINE"){
-			zoom_line(draw,center,ratio);
+			zoom_line(draw,center,ratioX, ratioY);
 		}
 		
 		if(draw.drawType=="PATH"){
@@ -662,10 +852,10 @@ function zoomin(draws, center, ratio){
 			for(let segment of draw.segments){
 				
 				if(segment.drawType=="LINE"){
-					zoom_line(segment,center,ratio);
+					zoom_line(segment,center,ratioX,ratioY);
 				}
 				if(segment.drawType=="BEZIER"){
-					zoom_bezier(segment,center,ratio);
+					zoom_bezier(segment,center,ratioX, ratioY);
 				}
 				
 			}
@@ -1022,6 +1212,24 @@ module.exports = function(){
 		
 		if(drawType=="SELECT"){
 			
+			if(currentDrawCONST){
+				
+				let idx_arrow = is_arrow_selected(currentDrawCONST, {x,y});
+				currentDrawCONST.idx_arrow = idx_arrow;
+				currentDrawCONST.dragging = true;
+				currentDrawCONST.dragging_pt = {
+					x: x,
+					y: y
+				};
+				
+				if(idx_arrow!=undefined){
+					return;
+				}
+				
+				render(ctx, draws);
+				
+			}
+			
 			let drawSelected = getSelected(draws, {x,y});
 			if(drawSelected){
 				
@@ -1222,7 +1430,17 @@ module.exports = function(){
 
             objDraw = new drawRaw(); 
 
-        }       
+        }    
+
+		else if(drawType=="SELECT"){
+			
+			if(currentDrawCONST && currentDrawCONST.dragging){
+				
+				currentDrawCONST.dragging = false;
+				
+			}
+			
+		}
 
     })
 
@@ -1309,6 +1527,160 @@ module.exports = function(){
             objDraw.ptend.y = ev.offsetY;
 			
 			render(ctx, [...draws, objDraw]);
+			
+		}
+		
+		if(drawType=="SELECT" && currentDrawCONST){
+			
+			if(currentDrawCONST.dragging){
+
+				let ohandle = currentDrawCONST.drawref;
+				let idx_arrow__ = currentDrawCONST.idx_arrow;
+				
+				if(currentDrawCONST.idx_arrow == 0){
+					
+					let leny = currentDrawCONST.dragging_pt.y - y;
+					let ratioY = (currentDrawCONST.height+leny)/currentDrawCONST.height;
+					
+					let ptcenter = {
+						x: currentDrawCONST.x,
+						y: currentDrawCONST.y + currentDrawCONST.height
+					};
+					
+					zoomin_([ohandle], ptcenter, 1, ratioY);
+					
+				}
+				
+				if(currentDrawCONST.idx_arrow == 1){
+					
+					let leny = currentDrawCONST.dragging_pt.y - y;
+					let ratioY = (currentDrawCONST.height+leny)/currentDrawCONST.height;
+					
+					let lenx = x - currentDrawCONST.dragging_pt.x;
+					let ratioX = (currentDrawCONST.width+lenx)/currentDrawCONST.width;
+					
+					let ptcenter = {
+						x: currentDrawCONST.x,
+						y: currentDrawCONST.y+currentDrawCONST.height
+					};
+					
+					zoomin_([ohandle], ptcenter,ratioX,ratioY);
+
+				}
+				
+				if(currentDrawCONST.idx_arrow == 2){
+					
+					let lenx = x - currentDrawCONST.dragging_pt.x;
+					let ratioX = (currentDrawCONST.width+lenx)/currentDrawCONST.width;
+					
+					let ptcenter = {
+						x: currentDrawCONST.x,
+						y: currentDrawCONST.y
+					};
+					
+					zoomin_([ohandle], ptcenter,ratioX,1);
+				
+				}
+				
+				if(currentDrawCONST.idx_arrow == 3){
+					
+					let lenx = x - currentDrawCONST.dragging_pt.x;
+					let ratioX = (currentDrawCONST.width+lenx)/currentDrawCONST.width;
+					
+					let leny = y - currentDrawCONST.dragging_pt.y;
+					let ratioY = (currentDrawCONST.height+leny)/currentDrawCONST.height;
+					
+					let ptcenter = {
+						x: currentDrawCONST.x,
+						y: currentDrawCONST.y
+					};
+					
+					zoomin_([ohandle], ptcenter,ratioX,ratioY);
+				}
+				
+				if(currentDrawCONST.idx_arrow == 4){
+					
+					let leny = y - currentDrawCONST.dragging_pt.y;
+					let ratioY = (currentDrawCONST.height+leny)/currentDrawCONST.height;
+					
+					let ptcenter = {
+						x: currentDrawCONST.x,
+						y: currentDrawCONST.y
+					};
+					
+					zoomin_([ohandle], ptcenter,1,ratioY);
+					
+				}
+				
+				if(currentDrawCONST.idx_arrow == 5){
+					
+					let leny = y - currentDrawCONST.dragging_pt.y;
+					let ratioY = (currentDrawCONST.height+leny)/currentDrawCONST.height;
+					
+					let lenx = currentDrawCONST.dragging_pt.x - x;
+					let ratioX = (currentDrawCONST.width+lenx)/currentDrawCONST.width;
+					
+					let ptcenter = {
+						x: currentDrawCONST.x + currentDrawCONST.width,
+						y: currentDrawCONST.y
+					};
+					
+					zoomin_([ohandle], ptcenter,ratioX,ratioY);
+					
+				}
+				
+				if(currentDrawCONST.idx_arrow == 6){
+					
+					let lenx = currentDrawCONST.dragging_pt.x - x;
+					let ratioX = (currentDrawCONST.width+lenx)/currentDrawCONST.width;
+					
+					let ptcenter = {
+						x: currentDrawCONST.x + currentDrawCONST.width,
+						y: currentDrawCONST.y
+					};
+					
+					zoomin_([ohandle], ptcenter,ratioX,1);
+					
+				}
+				
+				if(currentDrawCONST.idx_arrow==7){
+					
+					let lenx = currentDrawCONST.dragging_pt.x - x;
+					let ratioX = (currentDrawCONST.width+lenx)/currentDrawCONST.width;
+					
+					let leny = currentDrawCONST.dragging_pt.y - y;
+					let ratioY = (currentDrawCONST.height+leny)/currentDrawCONST.height;
+					
+					let ptcenter = {
+						x: currentDrawCONST.x + currentDrawCONST.width,
+						y: currentDrawCONST.y + currentDrawCONST.height
+					}
+					
+					zoomin_([ohandle], ptcenter,ratioX,ratioY);
+					
+				}
+				
+				
+				let select_draw = makeSelectDraw(ohandle);
+				
+				currentDrawCONST = select_draw;
+				currentDrawCONST.drawref = ohandle;
+				currentDrawCONST.dragging = true;
+				currentDrawCONST.idx_arrow = idx_arrow__;
+				currentDrawCONST.dragging_pt = {
+					x: x,
+					y: y
+				};
+				
+				render(ctx,draws);
+				
+				return;
+			}
+			
+			let idx_arrow = is_arrow_selected(currentDrawCONST, {x,y});
+			currentDrawCONST.idx_arrow = idx_arrow;
+			
+			render(ctx, draws);
 			
 		}
 		
